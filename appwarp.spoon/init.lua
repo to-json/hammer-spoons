@@ -13,7 +13,6 @@ obj.author = "j <to-json@proton.me>"
 obj.homepage = "https://github.com/to-json/hammer-spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
-
 -- these functions are conveniences for openApplication and are not, as such
 -- documented as exposed methods
 
@@ -34,6 +33,9 @@ local function tableFindIndex(t, fn)
   end
   return nil
 end
+
+-- obj structures that are not just metadata
+obj.bindings = {}
 
 --- appWarp:openApplication
 --- Method
@@ -121,12 +123,22 @@ end
 -- This method is "private", it is the actual keybinding mechanism, but, the conventional spoon
 -- public api requires bindHotKeys to do that work
 function obj:bindModalHotKeys(mapping)
-  hs.hotkey.bind({'ctrl','shift'}, 'z', function() self.openApplication(self, 'zoom.us') end)
   if (self.modeKey) then
       self.modeKey:delete()
   end
-  self.modeKey = hs.hotkey.modal.new(mapping["appWarp"][1], mapping["appWarp"][2])
+  local warp_mapping = mapping["appWarp"]
   mapping["appWarp"] = nil
+  for app_name, binding in pairs(mapping) do
+    local binding_string = ""
+    if binding[1] then
+      binding_string = string.format("%s : %s + %s", app_name, binding[1], binding[2])
+    else
+      binding_string = string.format("%s : %s", app_name, binding[2])
+    end
+    table.insert(self.bindings, binding_string)
+  end
+  local msg = table.concat(self.bindings, " - ")
+  self.modeKey = hs.hotkey.modal.new(warp_mapping[1], warp_mapping[2], msg)
   for app_name, binding in pairs(mapping) do
     local func = function()
       self.modeKey:exit()

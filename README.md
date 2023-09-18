@@ -32,5 +32,6 @@ application also dismisses the modal interface started by the `appWarp`
 binding; think of it like the `leader` key in Vim if you use that.
 
 As I write this, I'm realizing that displaying an app list would be useful.
-Another day, maybe.
+Another day, maybe. (Update 9/18/23: this sorta works now, but, it sucks; 
+still futzing with it)
 
